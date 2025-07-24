@@ -1,0 +1,9 @@
+SVELTE TODO APP 
+
+1. INSTALL THE FRAMEWORK SVELTE WITH VITE 
+->npx create vite@latest
+ -default as . kay naa natay rootfolder 
+ select framework  as svelte lain pud haha 
+ select variant typescript para hawud kunuhay
+ then install NPM INSTALL 
+ npm run dev 
