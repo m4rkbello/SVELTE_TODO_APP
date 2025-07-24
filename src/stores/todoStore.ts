@@ -1,53 +1,46 @@
-import { writable} from "svelte/store";
-import type {Todo, TodoFilter} from "../types/todo"
+import { writable } from "svelte/store";
+import type { Todo, TodoFilter } from "../types/todo";
 
+// Writable stores
 export const todoStore = writable<Todo[]>([]);
-export const filterStore = writable<TodoFilter[]>(["all"]);
+export const filterStore = writable<TodoFilter>("all");
 
-//Helper
+// Helper
 export const todoAction = {
-    add: (text: string, priority: Todo['priority'] = 'medium', category? : string) = {
+    add: (text: string, priority: Todo['priority'] = 'medium', category?: string) => {
         const newTodo: Todo = {
             id: crypto.randomUUID(),
-            text: Text.trim(),
+            text: text.trim(), // ✅ FIXED: used `text.trim()` instead of `Text.trim()`
             completed: false,
             createdAt: new Date(),
             priority,
             category,
         };
 
-        //update new data for todo ni chuy!
-        todoStore.update(todos => [newTodo, ...todos])
-    };
+        todoStore.update(todos => [newTodo, ...todos]);
+    },
 
-    toggle:(id: string) => {
-        todoStore.update(todos => 
-            todos.map((todo => todo.id === id ? {...todo, completed: !todo.completed} : todo))
+    toggle: (id: string) => {
+        todoStore.update(todos =>
+            todos.map(todo => todo.id === id ? { ...todo, completed: !todo.completed } : todo)
         );
     },
 
-
-    //UPDATE TODO
     update: (id: string, updates: Partial<Todo>) => {
-        todoStore.update(todos => todos.map((todo => todo.id === id ? {...todo, updates} : todo))
+        todoStore.update(todos =>
+            todos.map(todo => todo.id === id ? { ...todo, ...updates } : todo)
         );
     },
 
-    //DELETE TODO
     delete: (id: string) => {
-        todoStore.update((todos) => todos.filter((todo) => todo.id !== id));
+        todoStore.update(todos => todos.filter(todo => todo.id !== id));
     },
 
-    //CLEAR OR COMPLETED FILTER
     clearCompleted: () => {
-        todoStore.update((todos) => todos.filter(todo => !todo.completed));
+        todoStore.update(todos => todos.filter(todo => !todo.completed));
     },
 
     setFilter: (filter: TodoFilter) => {
         filterStore.set(filter);
-
-        }
     }
-
-
 };
