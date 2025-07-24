@@ -6,7 +6,7 @@ export const todoStore = writable<Todo[]>([]);
 export const filterStore = writable<TodoFilter>("all");
 
 // Helper
-export const todoAction = {
+export const todoActions = {
     add: (text: string, priority: Todo['priority'] = 'medium', category?: string) => {
         const newTodo: Todo = {
             id: crypto.randomUUID(),

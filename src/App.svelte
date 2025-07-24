@@ -1,47 +1,102 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import { onMount } from "svelte";
+  import { todoStore, todoActions } from "./stores/todoStore";
+  import type { Todo } from "./types/todo";
+
+  let isInitialized = false;
+
+  todoStore.subscribe((value) => {
+    if (isInitialized) {
+      localStorage.setItem("svelete-todo", JSON.stringify(value));
+    }
+  });
+
+  onMount(() => {
+    //initialization - load todos from localStorage
+    let saveTodos = localStorage.getItem("svelte-todo");
+
+    if (saveTodos) {
+      try {
+        const parseTodos = JSON.parse(saveTodos);
+        const todosWithDates = parseTodos.map((todo: Todo) => ({
+          ...todoStore,
+          createdAt: new Date(todo.createdAt),
+        }));
+        todoStore.set(todosWithDates);
+        isInitialized = true;
+      } catch (error) {
+        console.error("ERROR LOADING TODOS FROM LOCALSTORAGE", error);
+        todoStore.set([]);
+        isInitialized = true;
+      }
+    } else {
+      isInitialized = true;
+    }
+  });
+
+  function handleAdd(event: CustomEvent<Todo>) {
+    todoActions.add(
+      event.detail.text,
+      event.detail.priority,
+      event.detail.category
+    );
+  }
 </script>
 
-<main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
+<main class="app">
+  <div class="container">
+    <header class="header">
+      <h1>Modern Todo App</h1>
+      <p>Stay organized and boost your productivity</p>
+    </header>
+    <div class="content">
+      <!--TodoFORM-->
+    </div>
   </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  .app {
+    min-height: 100vh;
+    background: radial-gradient(
+      circle,
+      rgba(238, 174, 202, 1) 0%,
+      rgba(148, 187, 233, 1) 100%
+    );
+    font-family:
+      "linter",
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      "Open Sans",
+      "Helvetica Neue",
+      sans-serif;
+    padding: 2rem 1rem;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
   }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
+
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
   }
-  .read-the-docs {
-    color: #888;
+
+  .header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(45deg, #fff, #f0f0f0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 </style>
