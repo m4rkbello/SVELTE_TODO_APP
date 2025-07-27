@@ -99,4 +99,15 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  .header p {
+    font-size: 1.1.rem;
+    opacity: 0.9rem;
+    margin: 0;
+  }
+
+  .content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+  }
 </style>
